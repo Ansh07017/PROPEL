@@ -8,46 +8,35 @@ This document details the system design, data flow, ingestion strategy, fault lo
 
 The platform follows a decoupled client-server architecture backed by a spatial relational database, designed to process high-frequency IoT telemetry and automatically manage the fault lifecycle without human intervention.
 
-```markdown
-# Architecture & Technical Design
 
-This document details the system design, data flow, ingestion strategy, fault localization algorithms, and architectural trade-offs implemented for the KSPDB Operations platform.
+```text
 
----
-
-## 1. System Architecture & Data Flow
-
-The platform follows a decoupled client-server architecture backed by a spatial relational database, designed to process high-frequency IoT telemetry and automatically manage the fault lifecycle without human intervention.
-
-
-```
-
-    [ Pole IoT Devices / Simulator ]
-       (HTTP Push: /api/telemetry)
-                 |
-                 ▼
-┌────────────────────────────────────────┐
-│         Node.js / Express API          │
-│  - Ingestion & De-duplication Engine   │
-│  - Background Fault Analyzer Sweep     │
-└──────────────────┬─────────────────────┘
-                   │
-         ┌─────────┴─────────┐
-         ▼                   ▼
-┌─────────────────┐ ┌─────────────────┐
-│ PostgreSQL DB   │ │   AI Service    │
-│ (Drizzle ORM &  │ │ (LLM Dispatch   │
-│  Spatial Data)  │ │  Brief Gen)     │
-└─────────────────┘ └─────────────────┘
-                   ▲
-   |
-┌──────────────────┴─────────────────────┐
-│          React / Vite UI               │
-│  - Real-time Leaflet Spatial Map       │
-│  - Active/Closed Ticket Workflow       │
-│  - Live Telemetry Ingestion Stream     │
-└────────────────────────────────────────┘
-            (REST / JSON)  
+                    [ Pole IoT Devices / Simulator ]
+                       (HTTP Push: /api/telemetry)
+                                  |
+                                  ▼
+                ┌────────────────────────────────────────┐
+                │         Node.js / Express API          │
+                │  - Ingestion & De-duplication Engine   │
+                │  - Background Fault Analyzer Sweep     │
+                └──────────────────┬─────────────────────┘
+                                   │
+                         ┌─────────┴─────────┐
+                         ▼                   ▼
+                ┌─────────────────┐ ┌─────────────────┐
+                │ PostgreSQL DB   │ │   AI Service    │
+                │ (Drizzle ORM &  │ │ (LLM Dispatch   │
+                │  Spatial Data)  │ │  Brief Gen)     │
+                └─────────────────┘ └─────────────────┘
+                                   ▲
+                                   |
+                ┌──────────────────┴─────────────────────┐
+                │          React / Vite UI               │
+                │  - Real-time Leaflet Spatial Map       │
+                │  - Active/Closed Ticket Workflow       │
+                │  - Live Telemetry Ingestion Stream     │
+                └────────────────────────────────────────┘
+                           (REST / JSON)  
 ```
 
 ---
@@ -126,5 +115,3 @@ The UI is optimized for a control room operator working under high-pressure cond
 * **Placement:** Positioned within selected open tickets via the "Draft Dispatch Brief" action.
 * **Justification:** LLMs excel at summarization and natural language formatting. Instead of forcing operators to read raw coordinate matrices and technical node IDs, the AI translates structured fault data into a concise, professional SMS brief tailored for field crews. 
 * **Fallback:** If the AI service is unavailable, the system safely degrades by displaying core structured metadata directly.
-
-```
