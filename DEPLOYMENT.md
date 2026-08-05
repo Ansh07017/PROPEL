@@ -1,4 +1,3 @@
-```markdown
 # Deployment & Operations Guide
 
 This document provides step-by-step instructions for deploying, running, and troubleshooting the KSPDB Operations platform using Docker. 
@@ -94,7 +93,3 @@ docker compose down -v
 ```
 
 This safely removes all containers, networks, and persistent PostgreSQL data volumes. You can then run `docker compose up -d --build` again for a fresh start.
-
-```
-
-```
