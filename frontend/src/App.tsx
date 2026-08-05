@@ -12,7 +12,7 @@ L.Icon.Default.mergeOptions({
 });
 
 // Configure the Base URL for production vs local
-const API_BASE_URL = import.meta.env.VITE_API_URL || '';
+const API_BASE_URL = import.meta.env.VITE_API_URL || "https://propel-production-df2f.up.railway.app";
 
 // Auto-zooming Map Component
 function MapController({ center, zoom }: { center: [number, number], zoom: number }) {
