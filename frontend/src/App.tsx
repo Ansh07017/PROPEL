@@ -11,6 +11,9 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
 });
 
+// Configure the Base URL for production vs local
+const API_BASE_URL = import.meta.env.VITE_API_URL || '';
+
 // Auto-zooming Map Component
 function MapController({ center, zoom }: { center: [number, number], zoom: number }) {
   const map = useMap();
@@ -52,12 +55,12 @@ export default function App() {
   const [showLogs, setShowLogs] = useState(false);
 
   useEffect(() => {
-   const fetchData = async () => {
+    const fetchData = async () => {
       try {
         const [ticketsRes, statsRes, logsRes] = await Promise.all([
-          fetch('/api/tickets'),
-          fetch('/api/stats'),
-          fetch('/api/logs')
+          fetch(`${API_BASE_URL}/api/tickets`),
+          fetch(`${API_BASE_URL}/api/stats`),
+          fetch(`${API_BASE_URL}/api/logs`)
         ]);
         if (ticketsRes.ok) setTickets(await ticketsRes.json());
         if (statsRes.ok) setStats(await statsRes.json());
@@ -84,7 +87,7 @@ export default function App() {
   const generateBrief = async (ticket: Ticket) => {
     setIsGenerating(true);
     try {
-      const response = await fetch('/api/ai/dispatch', {
+      const response = await fetch(`${API_BASE_URL}/api/ai/dispatch`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -107,7 +110,7 @@ export default function App() {
 
   const triggerSimulation = async (command: string) => {
     try {
-      const response = await fetch('/api/simulate', {
+      const response = await fetch(`${API_BASE_URL}/api/simulate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ command })
@@ -120,7 +123,7 @@ export default function App() {
 
   const forceAnalyzerSweep = async () => {
     try {
-      const response = await fetch('/api/analyzer/run', { method: 'POST' });
+      const response = await fetch(`${API_BASE_URL}/api/analyzer/run`, { method: 'POST' });
       if (!response.ok) throw new Error("Analyzer sweep failed");
     } catch (error) {
       console.error("Error triggering analyzer:", error);
