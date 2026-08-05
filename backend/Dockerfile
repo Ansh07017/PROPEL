@@ -10,11 +10,8 @@ RUN npm install
 # Copy the rest of the backend code
 COPY . .
 
-# Build the TypeScript project to generate the 'dist' folder
-RUN npm run build
-
 # Expose the API port
 EXPOSE 3000
 
-# Start the compiled production server
-CMD ["npm", "start"]
+# Start directly using tsx without needing compilation
+CMD ["npx", "tsx", "src/index.ts"]
