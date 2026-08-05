@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
-    "start": "node dist/index.js",
+    "start": "npm run push && node dist/index.js",
     "db:generate": "drizzle-kit generate",
     "push": "drizzle-kit push:pg",
     "seed": "tsx src/db/seed.ts",
