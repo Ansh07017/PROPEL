@@ -1,4 +1,3 @@
-```markdown
 # Decisions Log
 
 This document logs significant architectural, technical, and product decisions made during the development of the KSPDB Operations platform, listed in reverse chronological order.
@@ -53,5 +52,3 @@ This document logs significant architectural, technical, and product decisions m
 1. **WebSocket Integration:** Replace polling intervals with robust WebSocket streaming for real-time telemetry updates.
 2. **Historical Analytics:** Implement aggregated uptime/downtime metrics per feeder to assist engineers with long-term capital planning.
 3. **Automated Unit Test Suite:** Expand automated testing coverage specifically around edge cases in the spatial MST fallback and multi-fault boundary detection.
-
-```
