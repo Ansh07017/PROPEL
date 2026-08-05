@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  # Database Service (PostgreSQL + PostGIS for spatial queries)
+  db:
+    image: postgis/postgis:15-3.3
+    container_name: kspdb-db
+    restart: always
+    environment:
+      POSTGRES_USER: kspdb_admin
+      POSTGRES_PASSWORD: kspdb_password
+      POSTGRES_DB: kspdb
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - kspdb-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kspdb_admin -d kspdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Backend Service (Node.js/Express/TypeScript)
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: kspdb-backend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DATABASE_URL=postgresql://kspdb_admin:kspdb_password@db:5432/kspdb
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - kspdb-network
+
+  # Frontend Service (React/Vite -> Nginx)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: kspdb-frontend
+    restart: unless-stopped
+    ports:
+      # Maps external port 5173 to Nginx's internal port 80
+      - "5173:80"
+    environment:
+      - VITE_API_URL=http://localhost:3000/api
+    depends_on:
+      - backend
+    networks:
+      - kspdb-network
+
+volumes:
+  pgdata:
+    driver: local
+
+networks:
+  kspdb-network:
+    driver: bridge
